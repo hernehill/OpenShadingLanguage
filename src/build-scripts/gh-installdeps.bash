@@ -62,7 +62,21 @@ if [[ "$ASWF_ORG" != ""  ]] ; then
 else
     # Using native Ubuntu runner
 
-    # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    # Deal with outdated NVIDIA gpg public key for GPU test
+    if [[ "${OSL_GPU_TEST:=0}" != "0" ]] ; then
+        cat /etc/apt/sources.list
+        ls -l /etc/apt/sources.list.d/
+        echo '#### cuda.list ####'
+        cat /etc/apt/sources.list.d/cuda.list
+        echo '#### cuda.list.save ####'
+        cat /etc/apt/sources.list.d/cuda.list.save
+        echo '#### nvidia-docker.list ####'
+        cat /etc/apt/sources.list.d/nvidia-docker.list
+        echo '### Get rid of cuda.list.save ###'
+        rm /etc/apt/sources.list.d/cuda.list.save
+        sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
+    fi
+
     time sudo apt-get update
 
     time sudo apt-get -q install -y \

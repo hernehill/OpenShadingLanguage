@@ -27,10 +27,16 @@ on:
 
 permissions: read-all
 
+# Allow subsequent pushes to the same PR or REF to cancel any previous jobs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 
 jobs:
 
   aswf:
+    if: 0
     name: "VFX${{matrix.vfxyear}} ${{matrix.desc}}"
     strategy:
       fail-fast: false
@@ -61,6 +67,19 @@ jobs:
             # pybind11_ver: v2.9.0
             simd: avx
             setenvs: export CMAKE_VERSION=3.15.5
+          - desc: GPU Cuda10 gcc6/C++14 llvm10 py2.7 boost-1.70 exr-2.3 OIIO-master avx2
+            nametag: linux-optix7-2019
+            runner: ubuntu-latest
+            vfxyear: 2019
+            vfxsuffix: -clang10
+            cxx_std: 14
+            openimageio_ver: master
+            python_ver: 2.7
+            # pybind11_ver: v2.9.0
+            simd: avx2,f16c
+            skip_tests: 1
+            setenvs: export OSL_CMAKE_FLAGS="-DUSE_OPTIX=1" OPTIX_VERSION=7.0
+                            OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=8.1.1
           - desc: gcc6/C++14 llvm10 py3.7 boost1.70 exr2.4 oiio2.2 sse4
             nametag: linux-vfx2020
             runner: ubuntu-latest
@@ -94,6 +113,26 @@ jobs:
             pybind11_ver: v2.9.0
             simd: avx2,f16c
             batched: b8_AVX2
+
+          - desc: GPU gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-master avx2
+            if: github.repository == 'AcademySoftwareFoundation/OpenShadingLanguage'
+            nametag: linux-vfx2022-GPU
+            gpu: 1
+            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+            vfxyear: 2019
+            vfxsuffix: -clang10
+            cxx_std: 14
+            # vfxyear: 2022
+            # vfxsuffix: -clang13
+            # cxx_std: 17
+            openimageio_ver: master
+            python_ver: 2.7
+            # python_ver: 3.9
+            pybind11_ver: v2.9.0
+            simd: avx2,f16c
+            # batched: b8_AVX2
+            setenvs: export OSL_CMAKE_FLAGS="-DUSE_OPTIX=1" OPTIX_VERSION=7.0
+
           - desc: clang12/C++17 llvm12 oiio-master boost1.73 exr3.1 py3.9 avx2 batch-avx512
             nametag: linux-clang12-llvm12-batch
             runner: ubuntu-latest
@@ -273,6 +312,9 @@ jobs:
         run: |
             ${{matrix.setenvs}}
             src/build-scripts/ci-startup.bash
+      - name: Get NVIDIA driver version
+        run: nvidia-smi
+        if: ${{matrix.gpu}}
       - name: Remove existing OIIO
         if: matrix.openimageio_ver != ''
         run: |
@@ -301,11 +343,34 @@ jobs:
 
 
   ubuntu:
+    if: 0
     name: "Ubuntu ${{matrix.desc}}"
     strategy:
       fail-fast: false
       matrix:
         include:
+          - desc: GPU gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-master avx2
+            if: github.repository == 'AcademySoftwareFoundation/OpenShadingLanguage'
+            nametag: linux-vfx2022-GPU
+            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+            gpu: 1
+            vfxyear: 2019
+            vfxsuffix: -clang10
+            cxx_std: 14
+            # vfxyear: 2022
+            # vfxsuffix: -clang13
+            # cxx_std: 17
+            openimageio_ver: master
+            python_ver: 2.7
+            # python_ver: 3.9
+            pybind11_ver: v2.9.0
+            simd: avx2,f16c
+            # batched: b8_AVX2
+            setenvs: export OSL_CMAKE_FLAGS="-DUSE_OPTIX=1" OPTIX_VERSION=7.0
+                            OSL_GPU_TEST=1
+                            LLVM_VERSION=13.0.0
+                            LLVM_DISTRO_NAME=ubuntu-20.04
+
           - desc: Debug gcc7/C++14 llvm9 py2.7 oiio2.3 exr2.4 sse4 boost1.65 exr2.4
             nametag: linux-debug-gcc7-llvm9
             runner: ubuntu-20.04
@@ -440,6 +505,7 @@ jobs:
 
   macos:
     name: "${{matrix.runner}} appleclang${{matrix.aclang}}/C++${{matrix.cxx_std}} py${{matrix.python_ver}} ${{matrix.desc}}"
+    if: 0
     strategy:
       fail-fast: false
       matrix:
@@ -514,6 +580,284 @@ jobs:
         run: |
             src/build-scripts/ci-build.bash
       - name: Testsuite
+        run: src/build-scripts/ci-test.bash
+      - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # v3.1.0
+        if: failure()
+        with:
+          name: osl-${{github.job}}-${{matrix.nametag}}
+          path: |
+            build/*.cmake
+            build/CMake*
+            build/testsuite/*/*.*
+
+
+
+
+
+
+  gpu:
+    if: 1
+    name: "${{matrix.vfxyear}} ${{matrix.desc}}"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - desc: GPU1 gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-master avx2
+            if: github.repository == 'AcademySoftwareFoundation/OpenShadingLanguage'
+            nametag: aswf-linux-vfx2022-GPU
+            # gpu: 1
+            # runner: ubuntu-20.04
+            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+            # image: aswftesting/ci-osl:2022-clang14
+            image: aswftesting/ci-osl:2019-clang10
+            vfxyear: 2019
+            vfxsuffix: -clang13
+            cxx_std: 14
+            # vfxyear: vfx2022
+            # vfxsuffix: -clang14
+            # cxx_std: 17
+            openimageio_ver: master
+            python_ver: 2.7
+            # python_ver: 3.9
+            pybind11_ver: v2.9.0
+            simd: avx2,f16c
+            # batched: b8_AVX2
+            setenvs: export OSL_CMAKE_FLAGS="-DUSE_OPTIX=1" OPTIX_VERSION=7.0
+                            OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=8.1.1
+
+          - desc: NOGPU1 gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-master avx2
+            if: github.repository == 'AcademySoftwareFoundation/OpenShadingLanguage'
+            nametag: aswf-linux-vfx2022-GPU
+            # gpu: 1
+            runner: ubuntu-20.04
+            # runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+            # image: aswftesting/ci-osl:2022-clang14
+            image: aswftesting/ci-osl:2019-clang10
+            vfxyear: 2019
+            vfxsuffix: -clang13
+            cxx_std: 14
+            # vfxyear: vfx2022
+            # vfxsuffix: -clang14
+            # cxx_std: 17
+            openimageio_ver: master
+            python_ver: 2.7
+            # python_ver: 3.9
+            # pybind11_ver: v2.9.0
+            simd: avx2,f16c
+            # batched: b8_AVX2
+            setenvs: export OSL_CMAKE_FLAGS="-DUSE_OPTIX=1" OPTIX_VERSION=7.0
+                            OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=8.1.1
+
+          # - desc: GPU2 gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-master avx2
+          #   if: github.repository == 'AcademySoftwareFoundation/OpenShadingLanguage'
+          #   nametag: ubuntu-linux-vfx2022-GPU
+          #   runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+          #   image: ubuntu:20.04
+          #   gpu: 1
+          #   # vfxyear: 2019
+          #   # vfxsuffix: -clang10
+          #   # cxx_std: 14
+          #   vfxyear: 2022
+          #   vfxsuffix: -clang13
+          #   cxx_compiler: g++-10
+          #   cxx_std: 17
+          #   openimageio_ver: master
+          #   python_ver: 2.7
+          #   # python_ver: "3.10"
+          #   pybind11_ver: v2.9.0
+          #   simd: avx2,f16c
+          #   # batched: b8_AVX2
+          #   setenvs: export OSL_CMAKE_FLAGS="-DUSE_OPTIX=1" OPTIX_VERSION=7.0
+          #                   OSL_GPU_TEST=1
+          #                   LLVM_VERSION=13.0.0
+          #                   LLVM_DISTRO_NAME=ubuntu-20.04
+
+          # # A non-GPU test just so we know we haven't broken the rest of
+          # # the build as we tinker with the GPU CI.
+          # - desc: gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio2.3 avx2
+          #   nametag: linux-vfx2022
+          #   runner: ubuntu-latest
+          #   vfxyear: vfx2022
+          #   vfxsuffix: -clang13
+          #   image: aswftesting/ci-osl:2022-clang13
+          #   cxx_std: 17
+          #   openimageio_ver: release
+          #   python_ver: 3.9
+          #   pybind11_ver: v2.9.0
+          #   simd: avx2,f16c
+          #   # batched: b8_AVX2
+
+          # # Another non-GPU test to make sure things work
+          # - desc: gcc10/C++17 llvm10 oiio-release boost1.65 exr2.5 avx2
+          #   if: 0
+          #   nametag: linux-2021ish-gcc10-llvm10
+          #   runner: ubuntu-20.04
+          #   cxx_compiler: g++-10
+          #   cxx_std: 17
+          #   fmt_ver: 7.0.1
+          #   openexr_ver: v2.5.6
+          #   openimageio_ver: release
+          #   pybind11_ver: v2.8.1
+          #   # python_ver: 2.7   FIXME
+          #   simd: avx2,f16c
+          #   setenvs: export LLVM_VERSION=10.0.0
+          #                   OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=7.0.1"
+          #                   PUGIXML_VERSION=v1.10
+
+    runs-on: ${{matrix.runner}}
+    container:
+      image: ${{matrix.image}}
+    env:
+      CXX: ${{matrix.cxx_compiler}}
+      CC: ${{matrix.cc_compiler}}
+      CMAKE_CXX_STANDARD: ${{matrix.cxx_std}}
+      FMT_VERSION: ${{matrix.fmt_ver}}
+      OPENEXR_VERSION: ${{matrix.openexr_ver}}
+      OPENIMAGEIO_VERSION: ${{matrix.openimageio_ver}}
+      PYBIND11_VERSION: ${{matrix.pybind11_ver}}
+      PYTHON_VERSION: ${{matrix.python_ver}}
+      USE_BATCHED: ${{matrix.batched}}
+      USE_SIMD: ${{matrix.simd}}
+    steps:
+      # We would like to use harden-runner, but it flags too many false
+      # positives, every time we download a dependency. We should use it only
+      # on CI runs where we are producing artifacts that users might rely on.
+      # - name: Harden Runner
+      #   uses: step-security/harden-runner@248ae51c2e8cc9622ecf50685c8bf7150c6e8813 # v1.4.3
+      #   with:
+      #     egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+      - name: Prepare ccache timestamp
+        id: ccache_cache_keys
+        run: echo "::set-output name=date::`date -u +'%Y-%m-%dT%H:%M:%SZ'`"
+      - name: ccache
+        id: ccache
+        uses: actions/cache@c3f1317a9e7b1ef106c153ac8c0f00fed3ddbc0d # v3.0.4
+        with:
+          path: /tmp/ccache
+          key: ${{github.job}}-${{matrix.nametag}}-${{steps.ccache_cache_keys.outputs.date}}
+          restore-keys: ${{github.job}}-${{matrix.nametag}}-
+      - name: Build setup
+        run: |
+            ${{matrix.setenvs}}
+            src/build-scripts/ci-startup.bash
+      # - name: Get NVIDIA driver version
+      #   run: nvidia-smi
+      #   if: ${{matrix.gpu}}
+      - name: Remove existing OIIO
+        if: matrix.openimageio_ver != ''
+        run: |
+            sudo rm -rf /usr/local/include/OpenImageIO
+            sudo rm -rf /usr/local/lib*/cmake/OpenImageIO
+            sudo rm -rf /usr/local/lib*/libOpenImageIO*
+            sudo rm -rf /usr/local/lib*/python3.9/site-packages/OpenImageIO*
+      - name: Dependencies
+        run: |
+            ${{matrix.depcmds}}
+            src/build-scripts/gh-installdeps.bash
+      - name: Build
+        run: src/build-scripts/ci-build.bash
+      - name: Testsuite
+        if: matrix.skip_tests != '1'
+        run: src/build-scripts/ci-test.bash
+      - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # v3.1.0
+        if: failure()
+        with:
+          name: osl-${{github.job}}-${{matrix.nametag}}
+          path: |
+            build/*.cmake
+            build/CMake*
+            build/testsuite/*/*.*
+
+
+  gpu-ubuntu:
+    name: "GPU Ubuntu ${{matrix.desc}}"
+    if: 1
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - desc: GPU3 gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-master avx2
+            if: github.repository == 'AcademySoftwareFoundation/OpenShadingLanguage'
+            nametag: linux-vfx2022-GPU
+            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+            gpu: 1
+            vfxyear: 2019
+            vfxsuffix: -clang10
+            cxx_std: 14
+            # vfxyear: 2022
+            # vfxsuffix: -clang13
+            # cxx_std: 17
+            openimageio_ver: master
+            python_ver: 2.7
+            # python_ver: 3.9
+            pybind11_ver: v2.9.0
+            simd: avx2,f16c
+            # batched: b8_AVX2
+            setenvs: export OSL_CMAKE_FLAGS="-DUSE_OPTIX=1" OPTIX_VERSION=7.0
+                            OSL_GPU_TEST=1
+                            LLVM_VERSION=13.0.0
+                            LLVM_DISTRO_NAME=ubuntu-20.04
+
+          # # Another non-GPU test to make sure things work
+          # - desc: gcc10/C++17 llvm10 oiio-release boost1.65 exr2.5 avx2
+          #   nametag: linux-2021ish-gcc10-llvm10
+          #   runner: ubuntu-20.04
+          #   cxx_compiler: g++-10
+          #   cxx_std: 17
+          #   fmt_ver: 7.0.1
+          #   openexr_ver: v2.5.6
+          #   openimageio_ver: release
+          #   pybind11_ver: v2.8.1
+          #   # python_ver: 2.7   FIXME
+          #   simd: avx2,f16c
+          #   setenvs: export LLVM_VERSION=10.0.0
+          #                   OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=7.0.1"
+          #                   PUGIXML_VERSION=v1.10
+
+    runs-on: ${{matrix.runner}}
+    env:
+      CXX: ${{matrix.cxx_compiler}}
+      CC: ${{matrix.cc_compiler}}
+      CMAKE_CXX_STANDARD: ${{matrix.cxx_std}}
+      FMT_VERSION: ${{matrix.fmt_ver}}
+      OPENEXR_VERSION: ${{matrix.openexr_ver}}
+      OPENIMAGEIO_VERSION: ${{matrix.openimageio_ver}}
+      PYBIND11_VERSION: ${{matrix.pybind11_ver}}
+      PYTHON_VERSION: ${{matrix.python_ver}}
+      USE_BATCHED: ${{matrix.batched}}
+      USE_SIMD: ${{matrix.simd}}
+    steps:
+      # We would like to use harden-runner, but it flags too many false
+      # positives, every time we download a dependency. We should use it only
+      # on CI runs where we are producing artifacts that users might rely on.
+      # - name: Harden Runner
+      #   uses: step-security/harden-runner@248ae51c2e8cc9622ecf50685c8bf7150c6e8813 # v1.4.3
+      #   with:
+      #     egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+      - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+      - name: Prepare ccache timestamp
+        id: ccache_cache_keys
+        run: echo "::set-output name=date::`date -u +'%Y-%m-%dT%H:%M:%SZ'`"
+      - name: ccache
+        id: ccache
+        uses: actions/cache@c3f1317a9e7b1ef106c153ac8c0f00fed3ddbc0d # v3.0.4
+        with:
+          path: /tmp/ccache
+          key: ${{github.job}}-${{matrix.nametag}}-${{steps.ccache_cache_keys.outputs.date}}
+          restore-keys: ${{github.job}}-${{matrix.nametag}}-
+      - name: Build setup
+        run: |
+            ${{matrix.setenvs}}
+            src/build-scripts/ci-startup.bash
+      - name: Dependencies
+        run: |
+            ${{matrix.depcmds}}
+            src/build-scripts/gh-installdeps.bash
+      - name: Build
+        run: src/build-scripts/ci-build.bash
+      - name: Testsuite
+        if: matrix.skip_tests != '1'
         run: src/build-scripts/ci-test.bash
       - uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # v3.1.0
         if: failure()
