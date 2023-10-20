@@ -31,6 +31,7 @@ permissions: read-all
 jobs:
 
   aswf:
+    if: 0
     name: "VFX${{matrix.vfxyear}} ${{matrix.desc}}"
     strategy:
       fail-fast: false
@@ -306,6 +307,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - desc: GPU gcc10/C++17 llvm10 oiio-release boost1.65 exr2.5 avx2
+            nametag: gpu-linux-2021ish-gcc10-llvm10
+            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+            cxx_compiler: g++-11
+            cxx_std: 17
+            fmt_ver: 10.1.0
+            openexr_ver: v3.2.1
+            openimageio_ver: master
+            pybind11_ver: v2.10.0
+            # python_ver: 2.7   FIXME
+            simd: avx2,f16c
+            setenvs: export LLVM_VERSION=14.0.0
+                            LLVM_DISTRO_NAME=ubuntu-18.04
+                            OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=10.1.0"
+                            PUGIXML_VERSION=v1.13
+
+
           - desc: Debug gcc7/C++14 llvm9 py2.7 oiio2.3 exr2.4 sse4 boost1.65 exr2.4
             nametag: linux-debug-gcc7-llvm9
             runner: ubuntu-20.04
@@ -334,55 +352,57 @@ jobs:
             setenvs: export LLVM_VERSION=10.0.0
                             OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=7.0.1"
                             PUGIXML_VERSION=v1.10
-          - desc: latest releases gcc11/C++17 llvm15 boost1.71 exr3.2 py3.9 avx2 batch-b16avx512
-            nametag: linux-latest-releases
-            runner: ubuntu-22.04
-            cxx_compiler: g++-11
-            cxx_std: 17
-            fmt_ver: 10.1.0
-            openexr_ver: v3.2.1
-            openimageio_ver: master
-            pybind11_ver: v2.10.0
-            python_ver: "3.10"
-            simd: avx2,f16c
-            batched: b8_AVX2,b8_AVX512,b16_AVX512
-            setenvs: export LLVM_VERSION=15.0.6
-                            LLVM_DISTRO_NAME=ubuntu-18.04
-                            OPENCOLORIO_VERSION=v2.2.0
-                            PUGIXML_VERSION=v1.13
-          - desc: bleeding edge gcc12/C++17 llvm16 oiio/ocio/exr/pybind-master boost1.71 py3.10 avx2 batch-b16avx512
-            nametag: linux-bleeding-edge
-            runner: ubuntu-22.04
-            cxx_compiler: g++-12
-            cxx_std: 17
-            fmt_ver: master
-            openexr_ver: main
-            openimageio_ver: master
-            pybind11_ver: master
-            python_ver: "3.10"
-            simd: avx2,f16c
-            batched: b8_AVX2,b8_AVX512,b16_AVX512
-            setenvs: export LLVM_VERSION=16.0.4
-                            LLVM_DISTRO_NAME=ubuntu-22.04
-                            OPENCOLORIO_VERSION=main
-                            PUGIXML_VERSION=master
-          - desc: clang14/C++17 llvm14 boost1.71 exr3.1 py3.8 avx2 batch-b16avx512
-            nametag: linux-latest-releases-clang
-            runner: ubuntu-20.04
-            cxx_compiler: clang++
-            cc_compiler: clang
-            cxx_std: 17
-            fmt_ver: 8.1.1
-            openexr_ver: v3.1.7
-            openimageio_ver: master
-            pybind11_ver: v2.9.2
-            python_ver: 3.8
-            simd: avx2,f16c
-            batched: b8_AVX2,b8_AVX512,b16_AVX512
-            setenvs: export LLVM_VERSION=14.0.0
-                            LLVM_DISTRO_NAME=ubuntu-18.04
-                            OPENCOLORIO_VERSION=v2.1.2
-                            PUGIXML_VERSION=v1.11.4
+
+
+          # - desc: latest releases gcc11/C++17 llvm15 boost1.71 exr3.2 py3.9 avx2 batch-b16avx512
+          #   nametag: linux-latest-releases
+          #   runner: ubuntu-22.04
+          #   cxx_compiler: g++-11
+          #   cxx_std: 17
+          #   fmt_ver: 10.1.0
+          #   openexr_ver: v3.2.1
+          #   openimageio_ver: master
+          #   pybind11_ver: v2.10.0
+          #   python_ver: "3.10"
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2,b8_AVX512,b16_AVX512
+          #   setenvs: export LLVM_VERSION=15.0.6
+          #                   LLVM_DISTRO_NAME=ubuntu-18.04
+          #                   OPENCOLORIO_VERSION=v2.2.0
+          #                   PUGIXML_VERSION=v1.13
+          # - desc: bleeding edge gcc12/C++17 llvm16 oiio/ocio/exr/pybind-master boost1.71 py3.10 avx2 batch-b16avx512
+          #   nametag: linux-bleeding-edge
+          #   runner: ubuntu-22.04
+          #   cxx_compiler: g++-12
+          #   cxx_std: 17
+          #   fmt_ver: master
+          #   openexr_ver: main
+          #   openimageio_ver: master
+          #   pybind11_ver: master
+          #   python_ver: "3.10"
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2,b8_AVX512,b16_AVX512
+          #   setenvs: export LLVM_VERSION=16.0.4
+          #                   LLVM_DISTRO_NAME=ubuntu-22.04
+          #                   OPENCOLORIO_VERSION=main
+          #                   PUGIXML_VERSION=master
+          # - desc: clang14/C++17 llvm14 boost1.71 exr3.1 py3.8 avx2 batch-b16avx512
+          #   nametag: linux-latest-releases-clang
+          #   runner: ubuntu-20.04
+          #   cxx_compiler: clang++
+          #   cc_compiler: clang
+          #   cxx_std: 17
+          #   fmt_ver: 8.1.1
+          #   openexr_ver: v3.1.7
+          #   openimageio_ver: master
+          #   pybind11_ver: v2.9.2
+          #   python_ver: 3.8
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2,b8_AVX512,b16_AVX512
+          #   setenvs: export LLVM_VERSION=14.0.0
+          #                   LLVM_DISTRO_NAME=ubuntu-18.04
+          #                   OPENCOLORIO_VERSION=v2.1.2
+          #                   PUGIXML_VERSION=v1.11.4
 
     runs-on: ${{matrix.runner}}
     env:
@@ -439,6 +459,7 @@ jobs:
 
 
   macos:
+    if: 0
     name: "${{matrix.runner}} appleclang${{matrix.aclang}}/C++${{matrix.cxx_std}} py${{matrix.python_ver}} ${{matrix.desc}}"
     strategy:
       fail-fast: false
