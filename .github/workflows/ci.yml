@@ -334,8 +334,9 @@ jobs:
                             LLVM_DISTRO_NAME=ubuntu-18.04
                             OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=10.1.0"
                             PUGIXML_VERSION=v1.13
-                            xINSTALL_DEP_PACKAGES=NO
-                            xEXTRA_DEP_PACKAGES="git cmake"
+                            INSTALL_DEP_PACKAGES=NO
+                            EXTRA_DEP_PACKAGES=""
+                            QT_VERSION=0
 
 
           # - desc: Debug gcc7/C++14 llvm9 py2.7 oiio2.3 exr2.4 sse4 boost1.65 exr2.4

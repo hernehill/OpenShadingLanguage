@@ -64,8 +64,8 @@ else
 
     # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
     time sudo apt-get update
+    # time sudo apt-get -q -y --only-upgrade install grub-efi-amd64-signed || /bin/true
 
-    export DEBIAN_FRONTEND="noninteractive"
     echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
     if [[ "$INSTALL_DEP_PACKAGES" != "NO" ]] ; then
         time sudo apt-get -q install -y \
