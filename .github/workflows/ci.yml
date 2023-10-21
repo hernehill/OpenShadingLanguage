@@ -321,7 +321,7 @@ jobs:
         include:
           - desc: GPU gcc10/C++17 llvm10 oiio-release boost1.65 exr2.5 avx2
             nametag: gpu-linux-2021ish-gcc10-llvm10
-            runner: ubuntu-22.04-gpu-6c-112g-336h-16vr
+            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
             cxx_compiler: g++-11
             cxx_std: 17
             fmt_ver: 10.1.0
@@ -334,36 +334,38 @@ jobs:
                             LLVM_DISTRO_NAME=ubuntu-18.04
                             OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=10.1.0"
                             PUGIXML_VERSION=v1.13
+                            INSTALL_DEP_PACKAGES=NO
+                            EXTRA_DEP_PACKAGES="git cmake"
 
 
-          - desc: Debug gcc7/C++14 llvm9 py2.7 oiio2.3 exr2.4 sse4 boost1.65 exr2.4
-            nametag: linux-debug-gcc7-llvm9
-            runner: ubuntu-20.04
-            cxx_compiler: g++-7
-            cxx_std: 14
-            openexr_ver: v2.4.3
-            openimageio_ver: v2.4.13.0
-            pybind11_ver: v2.6.2
-            python_ver: 2.7
-            simd: sse4.2
-            setenvs: export CMAKE_BUILD_TYPE=Debug
-                            LLVM_VERSION=9.0.0
-                            PUGIXML_VERSION=v1.9
-                            CTEST_TEST_TIMEOUT=240
-          - desc: gcc10/C++17 llvm10 oiio-release boost1.65 exr2.5 avx2
-            nametag: linux-2021ish-gcc10-llvm10
-            runner: ubuntu-20.04
-            cxx_compiler: g++-10
-            cxx_std: 17
-            fmt_ver: 7.0.1
-            openexr_ver: v2.5.6
-            openimageio_ver: release
-            pybind11_ver: v2.8.1
-            # python_ver: 2.7   FIXME
-            simd: avx2,f16c
-            setenvs: export LLVM_VERSION=10.0.0
-                            OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=7.0.1"
-                            PUGIXML_VERSION=v1.10
+          # - desc: Debug gcc7/C++14 llvm9 py2.7 oiio2.3 exr2.4 sse4 boost1.65 exr2.4
+          #   nametag: linux-debug-gcc7-llvm9
+          #   runner: ubuntu-20.04
+          #   cxx_compiler: g++-7
+          #   cxx_std: 14
+          #   openexr_ver: v2.4.3
+          #   openimageio_ver: v2.4.13.0
+          #   pybind11_ver: v2.6.2
+          #   python_ver: 2.7
+          #   simd: sse4.2
+          #   setenvs: export CMAKE_BUILD_TYPE=Debug
+          #                   LLVM_VERSION=9.0.0
+          #                   PUGIXML_VERSION=v1.9
+          #                   CTEST_TEST_TIMEOUT=240
+          # - desc: gcc10/C++17 llvm10 oiio-release boost1.65 exr2.5 avx2
+          #   nametag: linux-2021ish-gcc10-llvm10
+          #   runner: ubuntu-20.04
+          #   cxx_compiler: g++-10
+          #   cxx_std: 17
+          #   fmt_ver: 7.0.1
+          #   openexr_ver: v2.5.6
+          #   openimageio_ver: release
+          #   pybind11_ver: v2.8.1
+          #   # python_ver: 2.7   FIXME
+          #   simd: avx2,f16c
+          #   setenvs: export LLVM_VERSION=10.0.0
+          #                   OPENIMAGEIO_CMAKE_FLAGS="-DBUILD_FMT_VERSION=7.0.1"
+          #                   PUGIXML_VERSION=v1.10
 
 
           # - desc: latest releases gcc11/C++17 llvm15 boost1.71 exr3.2 py3.9 avx2 batch-b16avx512

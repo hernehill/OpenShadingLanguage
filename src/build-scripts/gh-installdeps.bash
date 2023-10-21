@@ -65,15 +65,21 @@ else
     # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
     time sudo apt-get update
 
-    time sudo apt-get -q install -y \
-        git cmake ninja-build ccache g++ \
-        libboost-dev libboost-thread-dev libboost-filesystem-dev \
-        libilmbase-dev libopenexr-dev \
-        libtiff-dev libgif-dev libpng-dev \
-        flex bison libbison-dev \
-        libpugixml-dev \
-        libopencolorio-dev
+    if [[ "$INSTALL_DEP_PACKAGES" != "NO" ]] ; then
+        time sudo apt-get -q install -y \
+            git cmake ninja-build ccache g++ \
+            libboost-dev libboost-thread-dev libboost-filesystem-dev \
+            libilmbase-dev libopenexr-dev \
+            libtiff-dev libgif-dev libpng-dev \
+            flex bison libbison-dev \
+            libpugixml-dev \
+            libopencolorio-dev
+    fi
 
+    if [[ "${EXTRA_DEP_PACKAGES}" != "" ]] ; then
+        time sudo apt-get -q install -y ${EXTRA_DEP_PACKAGES}
+    fi
+    
     if [[ "${QT_VERSION:-5}" == "5" ]] ; then
         time sudo apt-get -q install -y \
             qt5-default || /bin/true
