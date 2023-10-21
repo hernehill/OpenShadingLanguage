@@ -65,6 +65,7 @@ else
     # sudo add-apt-repository ppa:ubuntu-toolchain-r/test
     time sudo apt-get update
 
+    export DEBIAN_FRONTEND="noninteractive"
     if [[ "$INSTALL_DEP_PACKAGES" != "NO" ]] ; then
         time sudo apt-get -q install -y \
             git cmake ninja-build ccache g++ \
