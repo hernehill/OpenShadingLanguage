@@ -66,6 +66,7 @@ else
     time sudo apt-get update
 
     export DEBIAN_FRONTEND="noninteractive"
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
     if [[ "$INSTALL_DEP_PACKAGES" != "NO" ]] ; then
         time sudo apt-get -q install -y \
             git cmake ninja-build ccache g++ \
