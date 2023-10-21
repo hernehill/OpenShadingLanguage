@@ -31,117 +31,14 @@ permissions: read-all
 jobs:
 
   aswf:
-    if: 0
     name: "VFX${{matrix.vfxyear}} ${{matrix.desc}}"
     strategy:
       fail-fast: false
       matrix:
         include:
-          - desc: gcc6/C++14 llvm9 py2.7 boost1.66 exr2.4 oiio2.3 sse2
-            nametag: linux-vfx2020
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2019-clang9
-            vfxyear: 2019
-            cxx_std: 14
-            openexr_ver: v2.4.3
-            openimageio_ver: v2.4.13.0
-            python_ver: 2.7
-            pybind11_ver: v2.4.2
-            setenvs: export CMAKE_VERSION=3.15.5
-          - desc: clang9/C++14 llvm9 oiio-release boost1.66 avx2 exr2.4 py2.7
-            nametag: linux-clang9-llvm9
-            runner: ubuntu-20.04
-            container: aswftesting/ci-osl:2019-clang9
-            vfxyear: 2019
-            cc_compiler: clang
-            cxx_compiler: clang++
-            cxx_std: 14
-            openexr_ver: v2.4.3
-            openimageio_ver: release
-            python_ver: 2.7
-            # pybind11_ver: v2.9.0
-            simd: avx
-            setenvs: export CMAKE_VERSION=3.15.5
-          - desc: gcc6/C++14 llvm10 py3.7 boost1.70 exr2.4 oiio2.2 sse4
-            nametag: linux-vfx2020
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2020
-            vfxyear: 2020
-            cxx_std: 14
-            openimageio_ver: v2.4.13.0
-            python_ver: 3.7
-            pybind11_ver: v2.5.0
-            simd: sse4.2
-            setenvs: export CONAN_LLVM_VERSION=10.0.1
-          - desc: gcc9/C++17 llvm11 py3.7 boost1.73 exr2.5 oiio2.3 avx2 batch-b8avx2
-            nametag: linux-vfx2021
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2021-clang11
-            vfxyear: 2021
-            cxx_std: 17
-            openimageio_ver: v2.4.13.0
-            python_ver: 3.7
-            pybind11_ver: v2.7.0
-            simd: avx2,f16c
-            batched: b8_AVX2_noFMA
-          - desc: gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-rel avx2
-            nametag: linux-vfx2022
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2022-clang13
-            vfxyear: 2022
-            cxx_std: 17
-            openimageio_ver: release
-            python_ver: 3.9
-            pybind11_ver: v2.9.0
-            simd: avx2,f16c
-            batched: b8_AVX2
-          - desc: clang12/C++17 llvm12 oiio-master boost1.73 exr3.1 py3.9 avx2 batch-avx512
-            nametag: linux-clang12-llvm12-batch
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2022-clang12
-            vfxyear: 2022
-            cxx_std: 17
-            openimageio_ver: master
-            python_ver: 3.9
-            pybind11_ver: v2.6.2
-            simd: avx2,f16c
-            batched: b8_AVX2,b8_AVX512,b16_AVX512
-            setenvs: USE_OPENVDB=0
-          - desc: icc/C++17 llvm14 py3.9 boost1.76 exr3.1 oiio-master avx2
-            nametag: linux-icc
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2022-clang14
-            vfxyear: 2022
-            cc_compiler: icc
-            cxx_compiler: icpc
-            cxx_std: 17
-            fmt_ver: 7.1.3
-            openimageio_ver: master
-            python_ver: 3.9
-            pybind11_ver: v2.9.0
-            # simd: avx2,f16c
-            batched: b8_AVX2_noFMA
-            setenvs: export OSL_CMAKE_FLAGS="-DSTOP_ON_WARNING=OFF -DEXTRA_CPP_ARGS=-fp-model=consistent"
-                            OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=7.1.3
-                            USE_OPENVDB=0
-          - desc: icx/C++17 llvm14 py3.9 boost1.76 exr3.1 oiio2.3 avx2
-            nametag: linux-icx
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2022-clang14
-            vfxyear: 2022
-            cc_compiler: icx
-            cxx_compiler: icpx
-            cxx_std: 17
-            fmt_ver: 7.1.3
-            openimageio_ver: master
-            python_ver: 3.9
-            pybind11_ver: v2.9.0
-            simd: avx2,f16c
-            batched: b8_AVX2_noFMA
-            setenvs: export OSL_CMAKE_FLAGS="-DSTOP_ON_WARNING=OFF" USE_OPENVDB=0
           - desc: gcc11/C++17 llvm15 py3.10 boost1.80 exr3.1 oiio-rel avx2
             nametag: linux-vfx2023
-            runner: ubuntu-latest
+            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
             container: aswftesting/ci-osl:2023-clang15
             vfxyear: 2023
             cxx_std: 17
@@ -149,93 +46,207 @@ jobs:
             python_ver: "3.10"
             pybind11_ver: v2.9.0
             simd: avx2,f16c
-            batched: b8_AVX2
-          - desc: GPU Cuda11 gcc11/C++17 llvm15 py3.10 boost1.80 exr3.1 OIIO-master avx2
-            nametag: linux-optix7-2023
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2023-clang15
-            vfxyear: 2023
-            cxx_std: 17
-            openimageio_ver: master
-            python_ver: "3.10"
-            pybind11_ver: v2.10.0
-            simd: avx2,f16c
-            skip_tests: 1
-            setenvs: export OSL_CMAKE_FLAGS="-DOSL_USE_OPTIX=1" OPTIX_VERSION=7.0
-                            OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=9.1.0
-          - desc: oldest everything gcc6/C++14 llvm9 py2.7 boost1.66 oiio2.3 no-simd exr2.4
-            nametag: linux-oldest
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2019-clang9
-            vfxyear: 2019
-            cxx_std: 14
-            openexr_ver: v2.4.3
-            openimageio_ver: v2.4.13.0
-            python_ver: 2.7
-            pybind11_ver: v2.6.2
-            simd: 0
-            setenvs: export PUGIXML_VERSION=v1.8
-                            CMAKE_VERSION=3.15.5
+            # batched: b8_AVX2
 
-          # Address and leak sanitizers
-          - desc: sanitizers
-            nametag: sanitizer
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2022-clang13
-            vfxyear: 2022
-            cc_compiler: clang
-            cxx_compiler: clang++
-            cxx_std: 17
-            openimageio_ver: master
-            python_ver: 3.9
-            pybind11_ver: v2.9.0
-            simd: avx2,f16c
-            batched: b8_AVX2
-            setenvs: export OSL_CMAKE_FLAGS="-DSANITIZE=address -DOSL_TEST_BIG_TIMEOUT=1200"
-                            CMAKE_BUILD_TYPE=Debug
-                            CTEST_TEST_TIMEOUT=1200
-                            CTEST_EXCLUSIONS="broken|noise-reg.regress|noise-gabor-reg.regress|example-.*deformer|spline-reg.regress.batched|osl-imageio"
-                            OSL_OPTIONS=llvm_debugging_symbols=1
-                            TESTRENDER_AA=1
-                            OSL_TESTSUITE_SKIP_DIFF=1
-            # Sanitizer notes:
-            # - There are a handful of tests we disable entirely with
-            #   CTEST_EXCLUSIONS because they are irrelevant or just cannot be
-            #   made to be clean (and that's ok).
-            # - Tests with sanitizers run slow, so we increase timeouts, and
-            #   also set AA to 1 for render tests to speed them up.
-            #   OSL_TESTSUITE_SKIP_DIFF prevents making the AA=1 image result
-            #   fail, but that's ok because every other CI test is checking
-            #   the results; here we have no reason to believe results will
-            #   differ from other tests, we just need to run with sanitizers
-            #   turned on.
-            # - In testing.cmake, we rig texture tests to disable the leak
-            #   sanitizer, because we can't eliminate some completely benign
-            #   leaks from the texture system, and because they are called
-            #   from JITed code, we don't get a clean stack trace of things
-            #   that happen in OIIO and therefore we just can't enumerate the
-            #   allowed exceptions. So we trust that OIIO itself tests the
-            #   texture system adequately and is able to ignore the benign
-            #   "leaks."
+          # - desc: gcc6/C++14 llvm9 py2.7 boost1.66 exr2.4 oiio2.3 sse2
+          #   nametag: linux-vfx2020
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2019-clang9
+          #   vfxyear: 2019
+          #   cxx_std: 14
+          #   openexr_ver: v2.4.3
+          #   openimageio_ver: v2.4.13.0
+          #   python_ver: 2.7
+          #   pybind11_ver: v2.4.2
+          #   setenvs: export CMAKE_VERSION=3.15.5
+          # - desc: clang9/C++14 llvm9 oiio-release boost1.66 avx2 exr2.4 py2.7
+          #   nametag: linux-clang9-llvm9
+          #   runner: ubuntu-20.04
+          #   container: aswftesting/ci-osl:2019-clang9
+          #   vfxyear: 2019
+          #   cc_compiler: clang
+          #   cxx_compiler: clang++
+          #   cxx_std: 14
+          #   openexr_ver: v2.4.3
+          #   openimageio_ver: release
+          #   python_ver: 2.7
+          #   # pybind11_ver: v2.9.0
+          #   simd: avx
+          #   setenvs: export CMAKE_VERSION=3.15.5
+          # - desc: gcc6/C++14 llvm10 py3.7 boost1.70 exr2.4 oiio2.2 sse4
+          #   nametag: linux-vfx2020
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2020
+          #   vfxyear: 2020
+          #   cxx_std: 14
+          #   openimageio_ver: v2.4.13.0
+          #   python_ver: 3.7
+          #   pybind11_ver: v2.5.0
+          #   simd: sse4.2
+          #   setenvs: export CONAN_LLVM_VERSION=10.0.1
+          # - desc: gcc9/C++17 llvm11 py3.7 boost1.73 exr2.5 oiio2.3 avx2 batch-b8avx2
+          #   nametag: linux-vfx2021
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2021-clang11
+          #   vfxyear: 2021
+          #   cxx_std: 17
+          #   openimageio_ver: v2.4.13.0
+          #   python_ver: 3.7
+          #   pybind11_ver: v2.7.0
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2_noFMA
+          # - desc: gcc9/C++17 llvm13 py3.9 boost1.76 exr3.1 oiio-rel avx2
+          #   nametag: linux-vfx2022
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2022-clang13
+          #   vfxyear: 2022
+          #   cxx_std: 17
+          #   openimageio_ver: release
+          #   python_ver: 3.9
+          #   pybind11_ver: v2.9.0
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2
+          # - desc: clang12/C++17 llvm12 oiio-master boost1.73 exr3.1 py3.9 avx2 batch-avx512
+          #   nametag: linux-clang12-llvm12-batch
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2022-clang12
+          #   vfxyear: 2022
+          #   cxx_std: 17
+          #   openimageio_ver: master
+          #   python_ver: 3.9
+          #   pybind11_ver: v2.6.2
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2,b8_AVX512,b16_AVX512
+          #   setenvs: USE_OPENVDB=0
+          # - desc: icc/C++17 llvm14 py3.9 boost1.76 exr3.1 oiio-master avx2
+          #   nametag: linux-icc
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2022-clang14
+          #   vfxyear: 2022
+          #   cc_compiler: icc
+          #   cxx_compiler: icpc
+          #   cxx_std: 17
+          #   fmt_ver: 7.1.3
+          #   openimageio_ver: master
+          #   python_ver: 3.9
+          #   pybind11_ver: v2.9.0
+          #   # simd: avx2,f16c
+          #   batched: b8_AVX2_noFMA
+          #   setenvs: export OSL_CMAKE_FLAGS="-DSTOP_ON_WARNING=OFF -DEXTRA_CPP_ARGS=-fp-model=consistent"
+          #                   OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=7.1.3
+          #                   USE_OPENVDB=0
+          # - desc: icx/C++17 llvm14 py3.9 boost1.76 exr3.1 oiio2.3 avx2
+          #   nametag: linux-icx
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2022-clang14
+          #   vfxyear: 2022
+          #   cc_compiler: icx
+          #   cxx_compiler: icpx
+          #   cxx_std: 17
+          #   fmt_ver: 7.1.3
+          #   openimageio_ver: master
+          #   python_ver: 3.9
+          #   pybind11_ver: v2.9.0
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2_noFMA
+          #   setenvs: export OSL_CMAKE_FLAGS="-DSTOP_ON_WARNING=OFF" USE_OPENVDB=0
+          # - desc: gcc11/C++17 llvm15 py3.10 boost1.80 exr3.1 oiio-rel avx2
+          #   nametag: linux-vfx2023
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2023-clang15
+          #   vfxyear: 2023
+          #   cxx_std: 17
+          #   openimageio_ver: release
+          #   python_ver: "3.10"
+          #   pybind11_ver: v2.9.0
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2
+          # - desc: GPU Cuda11 gcc11/C++17 llvm15 py3.10 boost1.80 exr3.1 OIIO-master avx2
+          #   nametag: linux-optix7-2023
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2023-clang15
+          #   vfxyear: 2023
+          #   cxx_std: 17
+          #   openimageio_ver: master
+          #   python_ver: "3.10"
+          #   pybind11_ver: v2.10.0
+          #   simd: avx2,f16c
+          #   skip_tests: 1
+          #   setenvs: export OSL_CMAKE_FLAGS="-DOSL_USE_OPTIX=1" OPTIX_VERSION=7.0
+          #                   OPENIMAGEIO_CMAKE_FLAGS=-DBUILD_FMT_VERSION=9.1.0
+          # - desc: oldest everything gcc6/C++14 llvm9 py2.7 boost1.66 oiio2.3 no-simd exr2.4
+          #   nametag: linux-oldest
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2019-clang9
+          #   vfxyear: 2019
+          #   cxx_std: 14
+          #   openexr_ver: v2.4.3
+          #   openimageio_ver: v2.4.13.0
+          #   python_ver: 2.7
+          #   pybind11_ver: v2.6.2
+          #   simd: 0
+          #   setenvs: export PUGIXML_VERSION=v1.8
+          #                   CMAKE_VERSION=3.15.5
 
-            # Test formatting. This test entry doesn't do a full build, it
-            # just runs clang-format on everything, and passes if nothing is
-            # misformatted. Upon failure, the build artifact will be the full
-            # source code with the formatting fixed (diffs will also appear in
-            # the console output).
-          - desc: "clang-format"
-            nametag: clang-format
-            runner: ubuntu-latest
-            container: aswftesting/ci-osl:2022-clang14
-            vfxyear: 2022
-            cxx_std: 17
-            openimageio_ver: release
-            python_ver: 3.9
-            simd: avx2,f16c
-            batched: b8_AVX2
-            skip_tests: 1
-            setenvs: export BUILDTARGET=clang-format
-                            OPENIMAGEIO_CMAKE_FLAGS=-DUSE_PYTHON=0
+          # # Address and leak sanitizers
+          # - desc: sanitizers
+          #   nametag: sanitizer
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2022-clang13
+          #   vfxyear: 2022
+          #   cc_compiler: clang
+          #   cxx_compiler: clang++
+          #   cxx_std: 17
+          #   openimageio_ver: master
+          #   python_ver: 3.9
+          #   pybind11_ver: v2.9.0
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2
+          #   setenvs: export OSL_CMAKE_FLAGS="-DSANITIZE=address -DOSL_TEST_BIG_TIMEOUT=1200"
+          #                   CMAKE_BUILD_TYPE=Debug
+          #                   CTEST_TEST_TIMEOUT=1200
+          #                   CTEST_EXCLUSIONS="broken|noise-reg.regress|noise-gabor-reg.regress|example-.*deformer|spline-reg.regress.batched|osl-imageio"
+          #                   OSL_OPTIONS=llvm_debugging_symbols=1
+          #                   TESTRENDER_AA=1
+          #                   OSL_TESTSUITE_SKIP_DIFF=1
+          #   # Sanitizer notes:
+          #   # - There are a handful of tests we disable entirely with
+          #   #   CTEST_EXCLUSIONS because they are irrelevant or just cannot be
+          #   #   made to be clean (and that's ok).
+          #   # - Tests with sanitizers run slow, so we increase timeouts, and
+          #   #   also set AA to 1 for render tests to speed them up.
+          #   #   OSL_TESTSUITE_SKIP_DIFF prevents making the AA=1 image result
+          #   #   fail, but that's ok because every other CI test is checking
+          #   #   the results; here we have no reason to believe results will
+          #   #   differ from other tests, we just need to run with sanitizers
+          #   #   turned on.
+          #   # - In testing.cmake, we rig texture tests to disable the leak
+          #   #   sanitizer, because we can't eliminate some completely benign
+          #   #   leaks from the texture system, and because they are called
+          #   #   from JITed code, we don't get a clean stack trace of things
+          #   #   that happen in OIIO and therefore we just can't enumerate the
+          #   #   allowed exceptions. So we trust that OIIO itself tests the
+          #   #   texture system adequately and is able to ignore the benign
+          #   #   "leaks."
+
+          #   # Test formatting. This test entry doesn't do a full build, it
+          #   # just runs clang-format on everything, and passes if nothing is
+          #   # misformatted. Upon failure, the build artifact will be the full
+          #   # source code with the formatting fixed (diffs will also appear in
+          #   # the console output).
+          # - desc: "clang-format"
+          #   nametag: clang-format
+          #   runner: ubuntu-latest
+          #   container: aswftesting/ci-osl:2022-clang14
+          #   vfxyear: 2022
+          #   cxx_std: 17
+          #   openimageio_ver: release
+          #   python_ver: 3.9
+          #   simd: avx2,f16c
+          #   batched: b8_AVX2
+          #   skip_tests: 1
+          #   setenvs: export BUILDTARGET=clang-format
+          #                   OPENIMAGEIO_CMAKE_FLAGS=-DUSE_PYTHON=0
 
     runs-on: ${{matrix.runner}}
     container:
