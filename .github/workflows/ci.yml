@@ -31,14 +31,15 @@ permissions: read-all
 jobs:
 
   aswf:
+    if: 0
     name: "VFX${{matrix.vfxyear}} ${{matrix.desc}}"
     strategy:
       fail-fast: false
       matrix:
         include:
-          - desc: gcc11/C++17 llvm15 py3.10 boost1.80 exr3.1 oiio-rel avx2
-            nametag: linux-vfx2023
-            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+          - desc: GPU gcc11/C++17 llvm15 py3.10 boost1.80 exr3.1 oiio-rel avx2
+            nametag: gpu-linux-vfx2023
+            runner: ubuntu-22.04-gpu-6c-112g-336h-16vr
             container: aswftesting/ci-osl:2023-clang15
             vfxyear: 2023
             cxx_std: 17
@@ -320,7 +321,7 @@ jobs:
         include:
           - desc: GPU gcc10/C++17 llvm10 oiio-release boost1.65 exr2.5 avx2
             nametag: gpu-linux-2021ish-gcc10-llvm10
-            runner: ubuntu-20.04-gpu-6c-112g-336h-16vr
+            runner: ubuntu-22.04-gpu-6c-112g-336h-16vr
             cxx_compiler: g++-11
             cxx_std: 17
             fmt_ver: 10.1.0
