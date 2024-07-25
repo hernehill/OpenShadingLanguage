@@ -17,6 +17,7 @@ requires = [
     "pugixml-1.14",
     "boost-1.82",
     "openexr-3.1",
+    "ocio-2.1",  # being explicit here in case we have oiio 2.5.9 against ocio-2.3.2
     "oiio-2.5.9",
 ]
 
