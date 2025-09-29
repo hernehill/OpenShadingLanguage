@@ -11,3 +11,6 @@ build
 .vscode
 .envrc
 
+# HH
+_rez_build
+.idea

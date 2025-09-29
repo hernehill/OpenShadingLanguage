@@ -95,7 +95,7 @@ else ()
 endif ()
 set (OSL_LIBNAME_SUFFIX "" CACHE STRING
      "Optional name appended to ${PROJECT_NAME} libraries that are built")
-option (OSL_BUILD_TESTS "Build the unit tests, testshade, testrender" ON)
+option (OSL_BUILD_TESTS "Build the unit tests, testshade, testrender" OFF)  # Marcelo: was ON
 if (WIN32)
     option (USE_LLVM_BITCODE "Generate embedded LLVM bitcode" OFF)
 else ()
@@ -209,7 +209,7 @@ if (CMAKE_COMPILER_IS_INTEL)
 elseif (CMAKE_COMPILER_IS_CLANG OR CMAKE_COMPILER_IS_APPLECLANG OR CMAKE_COMPILER_IS_INTELCLANG)
     add_compile_options("-fno-reciprocal-math")
 endif ()
-       
+
 # Tell CMake to process the sub-directories
 add_subdirectory (src/include)
 add_subdirectory (src/liboslcomp)

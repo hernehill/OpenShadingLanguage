@@ -25,7 +25,7 @@ message (STATUS  "CMAKE_CXX_COMPILER_ID  = ${CMAKE_CXX_COMPILER_ID}")
 ###########################################################################
 # C++ language standard
 #
-set (CMAKE_CXX_STANDARD 14 CACHE STRING
+set (CMAKE_CXX_STANDARD 17 CACHE STRING  # Marcelo: was 14. Changed to 17 so we can use openvdb 11
      "C++ standard to build with (14, 17, 20, etc.)")
 set (DOWNSTREAM_CXX_STANDARD 14 CACHE STRING
      "C++ minimum standard to impose on downstream clients")
