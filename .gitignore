@@ -11,3 +11,7 @@ build
 .vscode
 .envrc
 .DS_Store
+
+# HH
+_rez_build
+.idea
