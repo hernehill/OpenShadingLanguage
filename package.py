@@ -1,6 +1,6 @@
 name = "osl"
 
-version = "1.14.7.0.hh.1.0.1"
+version = "1.14.7.0.hh.1.0.2"
 
 authors = [
     "AcademySoftwareFoundation",
@@ -41,7 +41,9 @@ def commands():
     env.OSL_LIBRARY_DIR = "{root}/lib"
 
     env.PATH.append("{root}/bin")
-    env.PATH.append("{root}/lib")
+    env.LD_LIBRARY_PATH.append("{root}/bin")
+    env.LIB.append("{root}/lib")
+    env.LD_LIBRARY_PATH.append("{root}/lib")
     env.PKG_CONFIG_PATH.append("{root}/lib/cmake/OSL")
 
     if "python" in resolve:
