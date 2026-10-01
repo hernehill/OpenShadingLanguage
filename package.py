@@ -23,7 +23,6 @@ requires = [
 private_build_requires = []
 
 variants = [
-    ["python-3.11"],
     ["python-3.13"],
 ]
 
