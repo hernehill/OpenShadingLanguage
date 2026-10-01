@@ -19,3 +19,7 @@ build
 .opencode/
 .github/copilot-instructions.md
 /specs
+
+# HH
+_rez_build
+.idea
